@@ -14,6 +14,8 @@ class Omlette:
         self.good     = BDD.variable(i+2)
         self.unbroken = BDD.variable(i+3)
 
+        self.reg_nums = list(range(0, i+4))
+
         #preparo le lettere proposizionali per gli stati primed
         k=i+4
         self.num_eggs_primed=[]
@@ -24,8 +26,12 @@ class Omlette:
         self.good_primed     = BDD.variable(k+i+2)#10
         self.unbroken_primed = BDD.variable(k+i+3)#11
 
+        self.primed_nums = list(range(k, k+i+4))
+
         #preparo le lettere proposizionali per le azioni
         self.prepareActions(k+i+4)
+
+        self.act_nums = list(range(k+i+4, k+i+6))
 
         #preparo l'OBDD per Q
         self.Q =self.mutual_exclusion(self.num_eggs) & ((self.good & ~self.bad) | (~self.good & self.bad)) & self.ok0(self.num_eggs[0], self.bad, self.unbroken) & self.ok1(self.num_eggs[1], self.bad, self.unbroken)
@@ -120,6 +126,13 @@ class Omlette:
     def ok1(self, nmggs1, bd, nbrkn):
         return ~nmggs1 | (~bd | ~nbrkn)
 
+    def getInitialState(self):
+        return self.num_eggs[0] & self.good & ~self.unbroken
+
+    def getFinalState(self):
+        return self.num_eggs[2] & self.good & ~self.unbroken
+    
+
 if __name__ == "__main__":
 
     om=Omlette(2)
@@ -128,7 +141,14 @@ if __name__ == "__main__":
     #print(om.R)
     num_eggs=om.num_eggs
 #    print(om.num_eggs[1] & om.Q & om.R & om.actDiscard)
-    print(om.Q & om.num_eggs[1] & om.R & om.actBreak & om.num_eggs_primed[0])
+    target  = om.R & om.num_eggs_primed[2] & om.good_primed & ~om.unbroken_primed
+    toPrint = target
+    for i in om.primed_nums:
+        toPrint = toPrint.restrict({i:False}) | toPrint.restrict({i:True})
+    for i in om.act_nums:
+        toPrint = toPrint.restrict({i:False}) | toPrint.restrict({i:True})
+
+    print(toPrint)
 
 
 
