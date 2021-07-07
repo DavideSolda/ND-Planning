@@ -127,20 +127,43 @@ class Omlette:
         return ~nmggs1 | (~bd | ~nbrkn)
 
     def getInitialState(self):
-        return self.num_eggs[0] & self.good & ~self.unbroken
+        return self.num_eggs[0] & self.good & ~self.unbroken & self.Q
 
     def getFinalState(self):
-        return self.num_eggs[2] & self.good & ~self.unbroken
-    
+        return self.num_eggs[self.i] & self.good & ~self.unbroken & self.Q
+
+    def echoDot(self):
+        f = open("graph.dot", "w")
+        f.write("digraph D {\n")
+        for i in self.reg_nums[:-3]:
+            for j in self.reg_nums[-3:-1]:#solo per good e bad
+                    for k in self.primed_nums[:-3]:
+                        for l in self.primed_nums[-3:-1]:#solo per good' e bad'
+                            #prima prova non unbroken e non unbroken'
+                            state  = "bad" if self.i+1==j else "good"
+                            stateP = "bad" if 2*(self.i+1)+3==l else "good"
+                            if self.R.restrict({k:True, l:True, i:True, j:True, 12:True, 13:True}) != BDD.zero(): 
+                                f.write(state+str(i)+"->"+stateP+str(k-(i+1)-3)+" [taillabel = \"discard\"];\n")
+                            if self.R.restrict({k:True, l:True, i:True, j:True, 12:False}) != BDD.zero():
+                                f.write(state+str(i)+"->"+stateP+str(k-(i+1)-3)+" [taillabel = \"Open\"];\n")
+                            if self.R.restrict({k:True, l:True, i:True, j:True, 12:True, 13:False}) != BDD.zero():
+                                f.write(state+str(i)+"->"+stateP+str(k-(i+1)-3)+" [taillabel = \"Break\"];\n")
+                            #prima prova non unbroken e non unbroken'
+        f.write("}")
+        f.close()
+        import subprocess
+        process = subprocess.Popen("dot -Tps graph.dot -o graph.ps".split(), stdout=subprocess.PIPE)
+        output, error = process.communicate()
 
 if __name__ == "__main__":
 
     om=Omlette(2)
-
+    om.echoDot()
 #    print(om.Q_primed & om.num_eggs_primed[1] & om.bad_primed & om.unbroken_primed)
     #print(om.R)
-    num_eggs=om.num_eggs
+#    num_eggs=om.num_eggs
 #    print(om.num_eggs[1] & om.Q & om.R & om.actDiscard)
+    """
     target  = om.R & om.num_eggs_primed[2] & om.good_primed & ~om.unbroken_primed
     toPrint = target
     for i in om.primed_nums:
@@ -149,12 +172,42 @@ if __name__ == "__main__":
         toPrint = toPrint.restrict({i:False}) | toPrint.restrict({i:True})
 
     print(toPrint)
-
-
+    """
+    #print(om.num_eggs[1] & om.bad & ~om.unbroken & om.Q & om.actBreak & om.R & om.num_eggs_primed[2] & om.good_primed & ~om.unbroken_primed)# & om.good_primed)# & ~om.unbroken_primed)
 
 
 
 """ QUESTE FUNZIONANO credo
         self.R = (self.Q & self.num_eggs[0]) & self.actBreak & (self.Q_primed & self.num_eggs_primed[1])
         self.R = self.R | (self.Q & self.num_eggs[1] & self.good & ~self.unbroken) & self.actBreak & (self.Q_primed & self.num_eggs_primed[2] & ~(self.unbroken_primed & self.bad_primed))
+"""
+
+"""
+    om.num_eggs[0] & om.Q & om.actBreak & om.num_eggs_primed[1] & om.bad_primed
+    om.num_eggs[0] & om.Q & om.actBreak & om.num_eggs_primed[1] & om.good_primed & om.unbroken_primed
+    om.num_eggs[0] & om.Q & om.actBreak & om.num_eggs_primed[1] & om.good_primed & ~om.unbroken_primed
+
+    om.num_eggs[1] & om.bad & om.Q & om.actDiscard & om.num_eggs_primed[0]
+    om.num_eggs[1] & om.bad & om.Q & om.actBreak & om.num_eggs_primed[2] & om.bad_primed & om.unbroken_primed
+    om.num_eggs[1] & om.bad & om.Q & om.actBreak & om.num_eggs_primed[2] & om.bad_primed & ~om.unbroken_primed
+
+    om.num_eggs[1] & om.good_primed & om.unbroken_primed & om.Q & om.actOpen & om.num_eggs_primed[1] & om.bad_primed
+    om.num_eggs[1] & om.good_primed & om.unbroken_primed & om.Q & om.actOpen & om.num_eggs_primed[1] & om.good_primed
+    om.num_eggs[1] & om.good_primed & om.unbroken_primed & om.Q & om.actDiscard & om.num_eggs_primed[0]
+
+    om.num_eggs[1] & om.good_primed & ~om.unbroken_primed & om.Q & om.actBreak & om.num_eggs_primed[2] & om.bad_primed
+    om.num_eggs[1] & om.good_primed & ~om.unbroken_primed & om.Q & om.actBreak & om.num_eggs_primed[2] & om.good_primed & om.unbroken_primed
+    om.num_eggs[1] & om.good_primed & ~om.unbroken_primed & om.Q & om.actBreak & om.num_eggs_primed[2] & om.good_primed & ~om.unbroken_primed
+    om.num_eggs[1] & om.good_primed & ~om.unbroken_primed & om.Q & om.actDiscard & om.num_eggs_primed[0]
+
+    om.num_eggs[2] & om.bad & om.unbroken_primed & om.Q & om.actOpen & om.num_eggs_primed[2] & om.bad_primed & ~om.unbroken_primed
+    om.num_eggs[2] & om.bad & om.unbroken_primed & om.Q & om.actDiscard & om.num_eggs_primed[0]
+
+    om.num_eggs[2] & om.bad & ~om.unbroken_primed & om.Q & om.actDiscard & om.num_eggs_primed[0]
+
+    om.num_eggs[2] & om.good & om.unbroken_primed & om.Q & om.actOpen & om.num_eggs_primed[2] & om.bad_primed & ~om.unbroken_primed
+    om.num_eggs[2] & om.good & om.unbroken_primed & om.Q & om.actOpen & om.num_eggs_primed[2] & om.bad_primed & om.unbroken_primed
+    om.num_eggs[2] & om.good & om.unbroken_primed & om.Q & om.actDiscard & om.num_eggs_primed[0]
+
+    om.num_eggs[2] & om.good & ~om.unbroken_primed & om.Q & om.actDiscard & om.num_eggs_primed[0]
 """
