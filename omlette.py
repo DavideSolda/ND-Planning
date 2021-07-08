@@ -136,19 +136,62 @@ class Omlette:
         f = open("graph.dot", "w")
         f.write("digraph D {\n")
         for i in self.reg_nums[:-3]:
+            
             for j in self.reg_nums[-3:-1]:#solo per good e bad
-                    for k in self.primed_nums[:-3]:
-                        for l in self.primed_nums[-3:-1]:#solo per good' e bad'
-                            #prima prova non unbroken e non unbroken'
-                            state  = "bad" if self.i+1==j else "good"
-                            stateP = "bad" if 2*(self.i+1)+3==l else "good"
-                            if self.R.restrict({k:True, l:True, i:True, j:True, 12:True, 13:True}) != BDD.zero(): 
-                                f.write(state+str(i)+"->"+stateP+str(k-(i+1)-3)+" [taillabel = \"discard\"];\n")
-                            if self.R.restrict({k:True, l:True, i:True, j:True, 12:False}) != BDD.zero():
-                                f.write(state+str(i)+"->"+stateP+str(k-(i+1)-3)+" [taillabel = \"Open\"];\n")
-                            if self.R.restrict({k:True, l:True, i:True, j:True, 12:True, 13:False}) != BDD.zero():
-                                f.write(state+str(i)+"->"+stateP+str(k-(i+1)-3)+" [taillabel = \"Break\"];\n")
-                            #prima prova non unbroken e non unbroken'
+                
+                for k in self.primed_nums[:-3]:
+
+                    for l in self.primed_nums[-3:-1]:#solo per good' e bad'
+                        #prima prova non unbroken e non unbroken'
+                        state  = "bad" if self.i+1==j else "good"
+                        
+                        stateP = "bad" if 2*(self.i+1)+3==l else "good"
+                        
+                        dest=str(k-(self.i+1)-3)
+                        print("non unbroken e non unbroken'")
+                        if self.R.restrict({k:True, l:True, i:True, j:True, 5:False, 11:False, 12:True, 13:True}) != BDD.zero(): 
+                            print(str(i)+"-*-"+str(j)+"|discard|"+str(k)+"-*-"+str(l)+"\t"+str(dest))
+                            f.write(state+str(i)+"->"+stateP+str(dest)+" [taillabel = \"discard\", color=\"gold\"];\n")
+                        if self.R.restrict({k:True, l:True, i:True, j:True, 5:False, 11:False, 12:False}) != BDD.zero():
+                            print(str(i)+"-*-"+str(j)+"|open|"+str(k)+"-*-"+str(l)+"\t"+str(dest))
+                            f.write(state+str(i)+"->"+stateP+str(dest)+" [taillabel = \"break\", color=\"green\"];\n")
+                        if self.R.restrict({k:True, l:True, i:True, j:True, 5:False, 11:False, 12:True, 13:False}) != BDD.zero():
+                            print(str(i)+"-*-"+str(j)+"|break|"+str(k)+"-*-"+str(l)+"\t"+str(dest))
+                            f.write(state+str(i)+"->"+stateP+str(dest)+" [taillabel = \"open\", color=\"blue\"];\n")
+                            
+                        print("unbroken e non unbroken'")
+                        if self.R.restrict({k:True, l:True, i:True, j:True, 5:True, 11:False, 12:True, 13:True}) != BDD.zero(): 
+                            print(str(i)+"-*-"+str(j)+"|discard|"+str(k)+"-*-"+str(l)+"\t"+str(dest))
+                            f.write(state+"Unbroken"+str(i)+"->"+stateP+str(dest)+" [taillabel = \"discard\", color=\"gold\"];\n")
+                        if self.R.restrict({k:True, l:True, i:True, j:True, 5:True, 11:False, 12:False}) != BDD.zero():
+                            print(str(i)+"-*-"+str(j)+"|open|"+str(k)+"-*-"+str(l)+"\t"+str(dest))
+                            f.write(state+"Unbroken"+str(i)+"->"+stateP+str(dest)+" [taillabel = \"break\", color=\"green\"];\n")
+                        if self.R.restrict({k:True, l:True, i:True, j:True, 5:True, 11:False, 12:True, 13:False}) != BDD.zero():
+                            print(str(i)+"-*-"+str(j)+"|break|"+str(k)+"-*-"+str(l)+"\t"+str(dest))
+                            f.write(state+"Unbroken"+str(i)+"->"+stateP+str(dest)+" [taillabel = \"open\", color=\"blue\"];\n")
+
+                        print("unbroken e unbroken'")
+                        if self.R.restrict({k:True, l:True, i:True, j:True, 5:True, 11:True, 12:True, 13:True}) != BDD.zero(): 
+                            print(str(i)+"-*-"+str(j)+"|discard|"+str(k)+"-*-"+str(l)+"\t"+str(dest))
+                            f.write(state+"Unbroken"+str(i)+"->"+stateP+"Unbroken"+str(dest)+" [taillabel = \"discard\", color=\"gold\"];\n")
+                        if self.R.restrict({k:True, l:True, i:True, j:True, 5:True, 11:True, 12:False}) != BDD.zero():
+                            print(str(i)+"-*-"+str(j)+"|open|"+str(k)+"-*-"+str(l)+"\t"+str(dest))
+                            f.write(state+"Unbroken"+str(i)+"->"+stateP+"Unbroken"+str(dest)+" [taillabel = \"break\", color=\"green\"];\n")
+                        if self.R.restrict({k:True, l:True, i:True, j:True, 5:True, 11:True, 12:True, 13:False}) != BDD.zero():
+                            print(str(i)+"-*-"+str(j)+"|break|"+str(k)+"-*-"+str(l)+"\t"+str(dest))
+                            f.write(state+"Unbroken"+str(i)+"->"+stateP+"Unbroken"+str(dest)+" [taillabel = \"open\", color=\"blue\"];\n")
+
+                        print("non unbroken e unbroken'")
+                        if self.R.restrict({k:True, l:True, i:True, j:True, 5:False, 11:True, 12:True, 13:True}) != BDD.zero(): 
+                            print(str(i)+"-*-"+str(j)+"|discard|"+str(k)+"-*-"+str(l)+"\t"+str(dest))
+                            f.write(state+str(i)+"->"+stateP+"Unbroken"+str(dest)+" [taillabel = \"discard\", color=\"gold\"];\n")
+                        if self.R.restrict({k:True, l:True, i:True, j:True, 5:False, 11:True, 12:False}) != BDD.zero():
+                            print(str(i)+"-*-"+str(j)+"|open|"+str(k)+"-*-"+str(l)+"\t"+str(dest))
+                            f.write(state+str(i)+"->"+stateP+"Unbroken"+str(dest)+" [taillabel = \"break\", color=\"green\"];\n")
+                        if self.R.restrict({k:True, l:True, i:True, j:True, 5:False, 11:True, 12:True, 13:False}) != BDD.zero():
+                            print(str(i)+"-*-"+str(j)+"|break|"+str(k)+"-*-"+str(l)+"\t"+str(dest))
+                            f.write(state+str(i)+"->"+stateP+"Unbroken"+str(dest)+" [taillabel = \"open\", color=\"blue\"];\n")
+
         f.write("}")
         f.close()
         import subprocess
@@ -159,6 +202,7 @@ if __name__ == "__main__":
 
     om=Omlette(2)
     om.echoDot()
+    print(om.num_eggs[1] & om.good & ~om.unbroken & om.Q & om.actDiscard & om.R & om.num_eggs_primed[2] & om.good_primed & om.unbroken_primed)
 #    print(om.Q_primed & om.num_eggs_primed[1] & om.bad_primed & om.unbroken_primed)
     #print(om.R)
 #    num_eggs=om.num_eggs
@@ -177,7 +221,7 @@ if __name__ == "__main__":
 
 
 
-""" QUESTE FUNZIONANO credo
+""" QUESTE FUNZIONANO cgoldo
         self.R = (self.Q & self.num_eggs[0]) & self.actBreak & (self.Q_primed & self.num_eggs_primed[1])
         self.R = self.R | (self.Q & self.num_eggs[1] & self.good & ~self.unbroken) & self.actBreak & (self.Q_primed & self.num_eggs_primed[2] & ~(self.unbroken_primed & self.bad_primed))
 """
