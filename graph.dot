@@ -1,22 +1,10 @@
 digraph D {
-good0->bad1 [taillabel = "break", color="green"];
-good0->good1 [taillabel = "break", color="green"];
-good0->goodUnbroken1 [taillabel = "break", color="green"];
-bad1->good0 [taillabel = "discard", color="gold"];
-bad1->bad2 [taillabel = "break", color="green"];
-bad1->badUnbroken2 [taillabel = "break", color="green"];
-good1->good0 [taillabel = "discard", color="gold"];
-goodUnbroken1->good0 [taillabel = "discard", color="gold"];
-goodUnbroken1->bad1 [taillabel = "open", color="blue"];
-goodUnbroken1->good1 [taillabel = "open", color="blue"];
-good1->bad2 [taillabel = "break", color="green"];
-good1->good2 [taillabel = "break", color="green"];
-good1->goodUnbroken2 [taillabel = "break", color="green"];
-bad2->good0 [taillabel = "discard", color="gold"];
-badUnbroken2->good0 [taillabel = "discard", color="gold"];
-badUnbroken2->bad2 [taillabel = "open", color="blue"];
-good2->good0 [taillabel = "discard", color="gold"];
-goodUnbroken2->good0 [taillabel = "discard", color="gold"];
-goodUnbroken2->bad2 [taillabel = "open", color="blue"];
-goodUnbroken2->good2 [taillabel = "open", color="blue"];
+good0->bad1 [color="orange"];
+good0->goodUnbroken1 [color="orange"];
+good0->good1 [color="orange"];
+bad1->good0 [color="red"];
+goodUnbroken1->good0 [color="red"];
+good1->good0 [color="red"];
+goodUnbroken1->bad1 [color="blue"];
+goodUnbroken1->good1 [color="blue"];
 }
